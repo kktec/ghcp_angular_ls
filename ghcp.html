@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html ng-app="ghcp">
+<head>
+    <title>Golf Handicap Tracker</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="lib/ng/angular.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet"/>
+    <link href="css/bootstrap-theme.css" rel="stylesheet"/>
+    <script>angular.module("ghcp", []);</script>
+    <script src="js/ghcp.js"></script>
+</head>
+<body ng-controller="ghcpCtrl">
+    <div class="page-header"><h1>Golf Handicap Tracker</h1></div>
+    <div class="panel">
+      <h3 class="">Handicap Index: {{index()}}</h3>
+      <h3 class="">Scores: <button ng-click="createScore(editedScore)" class="btn btn-xs btn-primary" ng-hide="editedScore">Add New</button></h3>
+      <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Strokes</th>
+                <th>Rating</th>
+                <th>Slope</th>
+                <th>Played On</th>
+                <th>Differential</th>
+                <th>Used</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="score in scores" ng-class="{danger: editedScore.id == score.id}">
+                <td>{{score.strokes}}</td>
+                <td>{{score.rating}}</td>
+                <td>{{score.slope}}</td>
+                <td>{{score.playedOn}}</td>
+                <td>{{score.differential.toFixed(1)}}</td>
+                <td>{{score.used}}</td>
+                <td><button ng-click="editScore(score)" class="btn btn-xs btn-primary">Change</button></td>
+                <td><button ng-click="deleteScore(score)" class="btn btn-xs btn-primary">Delete</button></td>
+            </tr>
+            <tr ng-show="editedScore" ng-class="{danger: editedScore}">
+                <td><input ng-model="editedScore.strokes" required></td>
+                <td><input ng-model="editedScore.rating" required></td>
+                <td><input ng-model="editedScore.slope" required></td>
+                <td><input ng-model="editedScore.playedOn" required></td>
+                <td></td>
+                <td></td>
+                <td><button ng-click="saveScore(editedScore)" class="btn btn-xs btn-primary">Save</button></td>
+                <td><button ng-click="cancelEdit()" class="btn btn-xs btn-primary">Cancel</button></td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+</body>
+</html>
