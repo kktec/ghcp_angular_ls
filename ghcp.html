@@ -8,14 +8,58 @@
     <script src="lib/ng/angular.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet"/>
     <link href="css/bootstrap-theme.css" rel="stylesheet"/>
-    <script>angular.module("ghcp", []);</script>
+    <script>angular.module("ghcp", ['ui.bootstrap']);</script>
+    <script src="lib/ui-bootstrap-tpls-0.11.2.js"></script>
+<!--     <script src="lib/moment.min.js"></script> -->
     <script src="js/ghcp.js"></script>
+    <style>
+        .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+        .ng-invalid { background-color: lightpink; }
+        .ng-valid { background-color: lightgreen; }
+        span.error { color: red; font-weight: bold; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #playedOn { width: 90%; }
+        .save-btn { margin-right: 10%; }
+    </style>
 </head>
 <body ng-controller="ghcpCtrl">
-    <div class="page-header"><h1>Golf Handicap Tracker</h1></div>
-    <div class="panel">
+    <div class="well">
+      <h2 class="bg-primary text-center" style="padding-top: 10px; padding-bottom: 10px;">Golf Handicap Tracker</h2>
       <h3 class="">Handicap Index: {{index()}}</h3>
-      <h3 class="">Scores: <button ng-click="createScore(editedScore)" class="btn btn-xs btn-primary" ng-hide="editedScore">Add New</button></h3>
+      <h3 class="">Scores: <button ng-click="createScore()" class="btn btn-xs btn-primary" ng-hide="editedScore && init"><i class="glyphicon glyphicon-plus"></i> Add New</button></h3>
+      <form novalidate name="form">
+        <div class="well" ng-show="editedScore && init">
+          <h3 ng-show="!editedScore.id">New Score</h3><br/>
+          <div class="form-group">
+              <label for="strokes">Strokes:</label>
+              <input type="number" name="strokes" ng-model="editedScore.strokes" required min="54" max="199" class="form-control">
+              <span class="error" ng-show="form.strokes.$error.required">Please enter the no. of strokes</span>
+          </div>
+          <div class="form-group">
+              <label for="rating">Rating:</label>
+              <input type="text" name="rating" ng-model="editedScore.rating" required usga-rating" class="form-control">
+              <span class="error" ng-show="form.rating.$error.required || form.rating.$error.rating">Please enter the USGA course rating, between 60.0 and 89.9</span>
+          </div>
+          <div class="form-group">
+              <label for="slope">Slope:</label>
+              <input type="number" name="slope" ng-model="editedScore.slope" required min="55" max="199" class="form-control">
+              <span class="error" ng-show="form.slope.$error.required">Please enter the USGA slope rating</span>
+          </div>
+          <div class="form-group">
+              <label for="playedOn">Played On:</label>
+              <input type="text" name="playedOn"  ng-click="open($event)" datepicker-popup="yyyy-MM-dd" max-date="today" ng-model="editedScore.playedOn" ng-required="true" is-open="opened" class="form-control"/>
+              <span class="error" ng-show="form.playedOn.$error.required">Please select or enter a valid date, yyyy-MM-dd</span>
+          </div>
+          <br/>
+          <div>
+            <button name="save" ng-click="saveScore(editedScore)" ng-disabled="form.$invalid" class="btn btn-large btn-success save-btn"><i class="glyphicon glyphicon-edit"></i> Save</button>
+            <button name="cancel" ng-click="cancelEdit()" class="btn btn-large btn-primary"><i class="glyphicon glyphicon-ban-circle"></i> Cancel</button>
+          </div>
+        </div>
+      </form>
       <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -30,25 +74,15 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="score in scores" ng-class="{danger: editedScore.id == score.id}">
+            <tr ng-repeat="score in scores | orderBy: ['-playedOn', '-id']" ng-class="{danger: editedScore.id == score.id}">
                 <td>{{score.strokes}}</td>
                 <td>{{score.rating}}</td>
                 <td>{{score.slope}}</td>
-                <td>{{score.playedOn}}</td>
+                <td>{{score.playedOn | date: 'yyyy-MM-dd'}}</td>
                 <td>{{score.differential.toFixed(1)}}</td>
                 <td>{{score.used}}</td>
-                <td><button ng-click="editScore(score)" class="btn btn-xs btn-primary">Change</button></td>
-                <td><button ng-click="deleteScore(score)" class="btn btn-xs btn-primary">Delete</button></td>
-            </tr>
-            <tr ng-show="editedScore" ng-class="{danger: editedScore}">
-                <td><input ng-model="editedScore.strokes" required></td>
-                <td><input ng-model="editedScore.rating" required></td>
-                <td><input ng-model="editedScore.slope" required></td>
-                <td><input ng-model="editedScore.playedOn" required></td>
-                <td></td>
-                <td></td>
-                <td><button ng-click="saveScore(editedScore)" class="btn btn-xs btn-primary">Save</button></td>
-                <td><button ng-click="cancelEdit()" class="btn btn-xs btn-primary">Cancel</button></td>
+                <td><button ng-click="editScore(score)" class="btn btn-xs btn-warning"><i class="glyphicon glyphicon-edit"></i> Change</button></td>
+                <td><button ng-click="deleteScore(score)" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove-circle"></i> Delete</button></td>
             </tr>
         </tbody>
       </table>
