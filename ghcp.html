@@ -10,8 +10,11 @@
     <link href="css/bootstrap-theme.css" rel="stylesheet"/>
     <script>angular.module("ghcp", ['ui.bootstrap']);</script>
     <script src="lib/ui-bootstrap-tpls-0.11.2.js"></script>
+<!--     <script src="lib/underscore.js"></script> -->
 <!--     <script src="lib/moment.min.js"></script> -->
-    <script src="js/ghcp.js"></script>
+    <script src="js/usgaRatingValidationDirective.js"></script>
+    <script src="js/ghcpController.js"></script>
+    
     <style>
         .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
         .ng-invalid { background-color: lightpink; }
@@ -68,7 +71,6 @@
                 <th>Slope</th>
                 <th>Played On</th>
                 <th>Differential</th>
-                <th>Used</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -79,8 +81,7 @@
                 <td>{{score.rating}}</td>
                 <td>{{score.slope}}</td>
                 <td>{{score.playedOn | date: 'yyyy-MM-dd'}}</td>
-                <td>{{score.differential.toFixed(1)}}</td>
-                <td>{{score.used}}</td>
+                <td>{{score.differential.toFixed(1)}} <i ng-show="score.used" class="glyphicon glyphicon-ok"></i></td>
                 <td><button ng-click="editScore(score)" class="btn btn-xs btn-warning"><i class="glyphicon glyphicon-edit"></i> Change</button></td>
                 <td><button ng-click="deleteScore(score)" class="btn btn-xs btn-danger"><i class="glyphicon glyphicon-remove-circle"></i> Delete</button></td>
             </tr>
